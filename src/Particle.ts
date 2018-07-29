@@ -1,8 +1,9 @@
 import { engine } from "./Sketch";
+import Nutrient from "./Nutrient";
 const p5 = require("p5");
 
 const MAX_SPEED = 5;
-const MAX_FORCE = 2;
+const MAX_FORCE = 0.1;
 
 export default class Particle {
     readonly acceleration: p5.Vector;
@@ -15,8 +16,16 @@ export default class Particle {
         this.position = engine.createVector(x, y);
     }
 
-    seek(target: p5.Vector) {
-        const desired = p5.Vector.sub(target, this.position);
+    findClosest(nutrients: Nutrient[]) {
+        return nutrients.reduce((current, next) => {
+            return this.position.dist(current.position) < this.position.dist(next.position)
+                ? current
+                : next
+        });
+    }
+
+    seek(nutrient: Nutrient) {
+        const desired = p5.Vector.sub(nutrient.position, this.position);
         desired.setMag(MAX_SPEED);
 
         const steer = p5.Vector.sub(desired, this.velocity);
@@ -26,6 +35,9 @@ export default class Particle {
         this.velocity.add(this.acceleration);
         this.velocity.limit(MAX_SPEED);
         this.position.add(this.velocity);
+        if (this.position.dist(nutrient.position) < 5) {
+            nutrient.wasEaten();
+        }
         this.acceleration.mult(0);
     }
 

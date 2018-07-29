@@ -6,10 +6,10 @@ const p5 = require("p5");
 
 
 
-export const engine = new p5(() => { });
+export const engine: p5 = new p5(() => { });
 const particle = new Particle(300, 300);
 const r = 6;
-const nutrients: Nutrient[] = [];
+let nutrients: Nutrient[] = [];
 
 engine.setup = () => {
   engine.createCanvas(600, 600);
@@ -22,20 +22,15 @@ engine.setup = () => {
 engine.draw = () => {
   engine.background(50);
   engine.noStroke();
-
-  const mouse = engine.createVector(engine.mouseX, engine.mouseY);
-
-  engine.fill(127);
-  engine.stroke(200);
-  engine.strokeWeight(2);
-  engine.ellipse(mouse.x, mouse.y, 48, 48);
-
-  particle.seek(mouse);
-  
-  drawNutrients();
-  drawParticle(particle);
-  
-  engine.text("Ceci est un text", 600, 650);
+  if (nutrients.length > 0) {
+    const closestNutient = particle.findClosest(nutrients);
+    particle.seek(closestNutient);
+    nutrients = nutrients.filter(n => !n.isEaten())
+    drawNutrients();
+    drawParticle(particle);
+  } else {
+    engine.noLoop();
+  }
 }
 
 const drawParticle = (particle: Particle) => {
