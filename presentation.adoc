@@ -1,24 +1,22 @@
 = Introduction aux Algorithmes Génétiques
 
-== Avant de commencer
+== Évolution Darwinienne
 
-Les trois principes fondamentaux de l’évolution darwinienne 
 [%step]
 * Sélection : Elimination naturelle des individus les moins aptes à survivre dans leur environnement
 * Hérédité : Un processus par lequel les enfants reçoivent les propriétés de leurs parents
 * Variation : Il doit exister un moyen d'introduire une variation des traits présents dans la population
 
-== Définition
-Un algorithme génétique est une méthode de recherche heuristique qui s'inspire de l'évolution darwinienne pour trouver une solution optimisée à un problème donné
+== Qu'est ce qu'un algorithme génétique
+Une méthode de recherche heuristique qui s'inspire de l'évolution darwinienne
 
-== Génération de la population initiale
-TODO
+== Génération de la population initiale (1/4)
+Création de N individu représentant une solution potentiel
 
-== Evaluation des individus
-[%step]
-* Définir une fonction de +fitness+
+== Evaluation des individus (2/4)
+Définir une fonction de +fitness+
 
-== Sélection
+== Sélection (3/4)
 Choix des individus qui donneront naissance à la prochaine génération 
 
 === L'Élitisme
@@ -27,7 +25,7 @@ Séléction des meilleurs individus de la population
 === La Roue de la fortune
 image::weel.png[]
 
-== Reproduction
+== Reproduction (4/4)
 
 === Croisement
 Créer un individu à partir du code génétique de deux parents
@@ -38,5 +36,6 @@ Modification aléatoire de l'information génétique de quelques individus
 == Démo
 
 == Récap
+image::flow3.png[]
 
 == Merci
