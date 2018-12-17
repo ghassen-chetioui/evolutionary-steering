@@ -10,8 +10,8 @@ export default class Nutrient {
         this.position = engine.createVector(x, y);
     }
 
-    isPoison() {
-        return this.nutritionalValue > 0;
+    isHarmful() {
+        return this.nutritionalValue < 0;
     }
 
     isEaten() {

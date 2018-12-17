@@ -1,44 +1,98 @@
 import { engine } from "./Sketch";
 import Nutrient from "./Nutrient";
+import DNA from "./DNA";
+import { SSL_OP_NO_TLSv1_1 } from "constants";
 const p5 = require("p5");
 
 const MAX_SPEED = 5;
-const MAX_FORCE = 0.1;
+const MAX_FORCE = 0.5;
 
 export default class Particle {
+
     readonly acceleration: p5.Vector;
     readonly velocity: p5.Vector;
     readonly position: p5.Vector;
+    readonly dna: DNA;
+    private health = 1;
+    age = 0;
 
-    constructor(x: number, y: number) {
-        this.acceleration = engine.createVector(0, 0);
+    constructor(x: number, y: number, dna: DNA) {
+        this.acceleration = engine.createVector(0.1, 0.1);
         this.velocity = engine.createVector(0, -2);
         this.position = engine.createVector(x, y);
+        this.dna = dna;
     }
 
-    findClosest(nutrients: Nutrient[]) {
-        return nutrients.reduce((current, next) => {
-            return this.position.dist(current.position) < this.position.dist(next.position)
-                ? current
-                : next
-        });
+    seek(nutrients: Nutrient[]) {
+        const visible = nutrients.filter(n => this.position.dist(n.position) <= this.dna.visibility)
+            .reduce((previous, current) => {
+                if (previous)
+                    return this.position.dist(previous.position) <= this.position.dist(current.position) ? previous : current;
+                else return current
+            }, undefined);
+        if (visible) {
+            const dist = visible.position.dist(this.position);
+            const attraction = visible.isHarmful() ? this.dna.poisonAttraction : this.dna.foodAttraction;
+            const desired = p5.Vector.sub(visible.position, this.position).mult(attraction).mult(10000 / dist);
+
+            desired.setMag(MAX_SPEED);
+            const steer = p5.Vector.sub(desired, this.velocity);
+            steer.limit(MAX_FORCE);
+
+            this.applyForce(steer);
+            nutrients.forEach(nutrient => {
+                if (this.position.dist(nutrient.position) < 5) {
+                    this.health += nutrient.nutritionalValue;
+                    nutrient.wasEaten();
+                }
+            })
+            this.acceleration.mult(0);
+        } else {
+            this.keepGoing();
+        }
+        this.age++;
+
     }
 
-    seek(nutrient: Nutrient) {
-        const desired = p5.Vector.sub(nutrient.position, this.position);
-        desired.setMag(MAX_SPEED);
-
-        const steer = p5.Vector.sub(desired, this.velocity);
-        steer.limit(MAX_FORCE);
-
+    private applyForce(steer: p5.Vector) {
         this.acceleration.add(steer);
         this.velocity.add(this.acceleration);
         this.velocity.limit(MAX_SPEED);
         this.position.add(this.velocity);
-        if (this.position.dist(nutrient.position) < 5) {
-            nutrient.wasEaten();
+    }
+
+    decreaseHealth() { this.health -= 0.007; }
+
+    isAlive() { return this.health > 0; }
+
+    getHealth() { return this.health }
+
+    keepGoing() {
+        this.position.add(this.velocity);
+
+        let desired = null;
+
+        if (this.position.x < 25) {
+            desired = new p5.Vector(MAX_SPEED, this.velocity.y);
         }
-        this.acceleration.mult(0);
+        else if (this.position.x > 1200 - 25) {
+            desired = new p5.Vector(-MAX_SPEED, this.velocity.y);
+        }
+
+        if (this.position.y < 25) {
+            desired = new p5.Vector(this.velocity.x, MAX_SPEED);
+        }
+        else if (this.position.y > 800 - 25) {
+            desired = new p5.Vector(this.velocity.x, -MAX_SPEED);
+        }
+
+        if (desired != null) {
+            desired.normalize();
+            desired.mult(MAX_SPEED);
+            const steer = desired.sub(this.velocity);
+            steer.limit(MAX_FORCE);
+            this.applyForce(steer);
+        }
     }
 
 }

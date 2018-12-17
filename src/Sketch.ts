@@ -2,41 +2,72 @@
 import 'p5';
 import Particle from './Particle';
 import Nutrient from './Nutrient';
+import DNA from './DNA';
+import Population from './Population';
 const p5 = require("p5");
 
-
-
 export const engine: p5 = new p5(() => { });
-const particle = new Particle(300, 300);
+
+const widht = 1200;
+const height = 800;
 const r = 6;
 let nutrients: Nutrient[] = [];
 
+const population = new Population(100)
+
+let regenerations = 0;
+
 engine.setup = () => {
-  engine.createCanvas(600, 600);
-  for (let i = 0; i < 10; i++) {
-    nutrients.push(new Nutrient(engine.random(600), engine.random(600), 1));
-    nutrients.push(new Nutrient(engine.random(600), engine.random(600), -5));
-  }
+  engine.createCanvas(widht, height);
+  initNutrients();
+  // engine.frameRate(5)
 }
 
 engine.draw = () => {
   engine.background(50);
   engine.noStroke();
-  if (nutrients.length > 0) {
-    const closestNutient = particle.findClosest(nutrients);
-    particle.seek(closestNutient);
-    nutrients = nutrients.filter(n => !n.isEaten())
+
+  const luck = engine.random()
+
+  if (luck < 0.2 && nutrients.filter(n => n.isHarmful()).length < 200) {
+    nutrients.push(new Nutrient(engine.random(widht), engine.random(height), -0.6));
+  } else if (luck > 0.7 && nutrients.filter(n => !n.isHarmful()).length < 200) {
+    nutrients.push(new Nutrient(engine.random(widht), engine.random(height), 0.3));
+  }
+
+  if (population.aliveIndividual().length > 0) {
+    population.aliveIndividual().forEach(p => {
+      p.seek(nutrients);
+      p.decreaseHealth();
+      drawParticle(p);
+    })
+    nutrients = nutrients.filter(n => !n.isEaten());
     drawNutrients();
-    drawParticle(particle);
+  } else if (regenerations < 5) {
+    population.print();
+    initNutrients();
+    population.nextGeneration(0.1);
+    //regenerations++;
   } else {
+    population.print();
     engine.noLoop();
   }
 }
 
+const initNutrients = () => {
+  nutrients.splice(0)
+  for (let i = 0; i < 300; i++) {
+    nutrients.push(new Nutrient(engine.random(widht), engine.random(height), 0.3));
+    nutrients.push(new Nutrient(engine.random(widht), engine.random(height), -0.5));
+  }
+}
+
 const drawParticle = (particle: Particle) => {
-  var theta = particle.velocity.heading() + engine.PI / 2;
-  engine.fill(127);
-  engine.stroke(200);
+  const theta = particle.velocity.heading() + engine.PI / 2;
+  const color = engine.lerpColor(engine.color(255, 0, 0), engine.color(0, 255, 0), particle.getHealth())
+
+  engine.fill(color);
+  engine.stroke(color);
   engine.strokeWeight(1);
   engine.push();
   engine.translate(particle.position.x, particle.position.y);
@@ -47,12 +78,16 @@ const drawParticle = (particle: Particle) => {
   engine.vertex(r, r * 2);
   engine.endShape(engine.CLOSE);
   engine.pop();
+
+  engine.noFill();
+  engine.ellipse(particle.position.x, particle.position.y, particle.dna.visibility * 2);
+
 }
 
 const drawNutrients = () => {
   engine.noStroke();
   for (let nutrient of nutrients) {
-    if (nutrient.isPoison()) {
+    if (nutrient.isHarmful()) {
       engine.fill(255, 0, 0);
     } else {
       engine.fill(0, 255, 0);
