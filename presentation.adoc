@@ -28,7 +28,7 @@ image::weel.png[]
 == Reproduction (4/4)
 
 === Croisement
-Créer un individu à partir du code génétique de deux parents
+Créer un individu à partir du code génétique des parents
 
 === Mutation
 Modification aléatoire de l'information génétique de quelques individus
@@ -37,5 +37,7 @@ Modification aléatoire de l'information génétique de quelques individus
 
 == Récap
 image::flow3.png[]
+
+== Des questions ? GIYF !
 
 == Merci

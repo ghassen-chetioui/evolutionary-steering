@@ -1,7 +1,6 @@
 import { engine } from "./Sketch";
 import Nutrient from "./Nutrient";
 import DNA from "./DNA";
-import { SSL_OP_NO_TLSv1_1 } from "constants";
 const p5 = require("p5");
 
 const MAX_SPEED = 5;
@@ -14,7 +13,7 @@ export default class Particle {
     readonly position: p5.Vector;
     readonly dna: DNA;
     private health = 1;
-    age = 0;
+    private age = 0;
 
     constructor(x: number, y: number, dna: DNA) {
         this.acceleration = engine.createVector(0.1, 0.1);
@@ -66,6 +65,8 @@ export default class Particle {
     isAlive() { return this.health > 0; }
 
     getHealth() { return this.health }
+
+    getAge() { return this.age }
 
     keepGoing() {
         this.position.add(this.velocity);

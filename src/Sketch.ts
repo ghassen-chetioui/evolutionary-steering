@@ -2,7 +2,6 @@
 import 'p5';
 import Particle from './Particle';
 import Nutrient from './Nutrient';
-import DNA from './DNA';
 import Population from './Population';
 const p5 = require("p5");
 
@@ -15,25 +14,15 @@ let nutrients: Nutrient[] = [];
 
 const population = new Population(100)
 
-let regenerations = 0;
-
 engine.setup = () => {
   engine.createCanvas(widht, height);
   initNutrients();
-  // engine.frameRate(5)
 }
 
 engine.draw = () => {
   engine.background(50);
   engine.noStroke();
 
-  const luck = engine.random()
-
-  if (luck < 0.2 && nutrients.filter(n => n.isHarmful()).length < 200) {
-    nutrients.push(new Nutrient(engine.random(widht), engine.random(height), -0.6));
-  } else if (luck > 0.7 && nutrients.filter(n => !n.isHarmful()).length < 200) {
-    nutrients.push(new Nutrient(engine.random(widht), engine.random(height), 0.3));
-  }
 
   if (population.aliveIndividual().length > 0) {
     population.aliveIndividual().forEach(p => {
@@ -42,16 +31,12 @@ engine.draw = () => {
       drawParticle(p);
     })
     nutrients = nutrients.filter(n => !n.isEaten());
-    drawNutrients();
-  } else if (regenerations < 5) {
+  } else {
     population.print();
     initNutrients();
     population.nextGeneration(0.1);
-    //regenerations++;
-  } else {
-    population.print();
-    engine.noLoop();
   }
+  drawNutrients();
 }
 
 const initNutrients = () => {
@@ -61,6 +46,8 @@ const initNutrients = () => {
     nutrients.push(new Nutrient(engine.random(widht), engine.random(height), -0.5));
   }
 }
+
+
 
 const drawParticle = (particle: Particle) => {
   const theta = particle.velocity.heading() + engine.PI / 2;
@@ -80,11 +67,20 @@ const drawParticle = (particle: Particle) => {
   engine.pop();
 
   engine.noFill();
-  engine.ellipse(particle.position.x, particle.position.y, particle.dna.visibility * 2);
-
+  if (debug) {
+    engine.ellipse(particle.position.x, particle.position.y, particle.dna.visibility * 2);
+  }
 }
 
 const drawNutrients = () => {
+  const luck = engine.random()
+
+  if (luck < 0.2 && nutrients.filter(n => n.isHarmful()).length < 200) {
+    nutrients.push(new Nutrient(engine.random(widht), engine.random(height), -0.6));
+  } else if (luck > 0.7 && nutrients.filter(n => !n.isHarmful()).length < 200) {
+    nutrients.push(new Nutrient(engine.random(widht), engine.random(height), 0.3));
+  }
+
   engine.noStroke();
   for (let nutrient of nutrients) {
     if (nutrient.isHarmful()) {
@@ -95,3 +91,5 @@ const drawNutrients = () => {
     engine.ellipse(nutrient.position.x, nutrient.position.y, 8, 8);
   }
 }
+
+const debug = false;

@@ -1,8 +1,6 @@
 import Particle from "./Particle";
 import { engine } from "./Sketch";
 import DNA from "./DNA";
-import { RSA_PKCS1_OAEP_PADDING } from "constants";
-const p5 = require("p5");
 
 export default class Population {
 
@@ -30,8 +28,8 @@ export default class Population {
     }
 
     private select(): Array<Particle> {
-        // TODO: implement better selection algorithm
-        return this.particles.sort((p1, p2) => { return p2.age - p1.age }).splice(4)
+        // TODO: implement better selection technique
+        return this.particles.sort((p1, p2) => { return p2.getAge() - p1.getAge() }).splice(20)
     }
 
     private cross(selected: Array<Particle>): Array<Particle> {
@@ -59,9 +57,9 @@ export default class Population {
                 if (att < 1) {
                     p.dna.visibility += engine.random(-5, 5)
                 } else if (att < 2) {
-                    p.dna.foodAttraction += engine.random(-0.5, 0.5)
+                    p.dna.foodAttraction += engine.random(-0.05, 0.05)
                 } else {
-                    p.dna.poisonAttraction += engine.random(-0.5, 0.5)
+                    p.dna.poisonAttraction += engine.random(-0.05, 0.05)
                 }
             }
         })
@@ -72,8 +70,8 @@ export default class Population {
     }
 
     print() {
-        const oldest = this.particles.sort((p1, p2) => { return p2.age - p1.age })[0]
-        console.log(`${oldest.age}, ${JSON.stringify(oldest.dna)}`)
+        const oldest = this.particles.sort((p1, p2) => { return p2.getAge() - p1.getAge() })[0]
+        console.log(`${oldest.getAge()}, ${JSON.stringify(oldest.dna)}`)
 
     }
 
