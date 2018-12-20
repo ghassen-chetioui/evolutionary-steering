@@ -22,18 +22,14 @@ export default class Population {
         }
     }
 
-    aliveIndividual() {
-        return this.particles.filter(p => p.isAlive())
-    }
-
     nextGeneration(mutationFactor: number) {
-        const selected = this.select();
+        const selected = this.evaluateAndSelect();
         const nextGeneration = this.cross(selected);
         this.mutate(nextGeneration, mutationFactor);
         this.particles = nextGeneration;
     }
 
-    private select(): Array<Particle> {
+    private evaluateAndSelect(): Array<Particle> {
         // TODO: implement better selection technique
         return this.particles.sort((p1, p2) => { return p2.getAge() - p1.getAge() }).splice(20)
     }
@@ -73,6 +69,10 @@ export default class Population {
 
     private randomValue(values: Array<any>) {
         return values[Math.floor(engine.random(values.length))]
+    }
+
+    aliveIndividual() {
+        return this.particles.filter(p => p.isAlive())
     }
 
     print() {
