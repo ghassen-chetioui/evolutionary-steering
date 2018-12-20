@@ -23,16 +23,21 @@ export default class Particle {
     }
 
     seek(nutrients: Nutrient[]) {
-        const visible = nutrients.filter(n => this.position.dist(n.position) <= this.dna.visibility)
+        const nutrient = nutrients.filter(n => this.position.dist(n.position) <= this.dna.visibility)
             .reduce((previous, current) => {
                 if (previous)
                     return this.position.dist(previous.position) <= this.position.dist(current.position) ? previous : current;
                 else return current
             }, undefined);
-        if (visible) {
-            const dist = visible.position.dist(this.position);
-            const attraction = visible.isHarmful() ? this.dna.poisonAttraction : this.dna.foodAttraction;
-            const desired = p5.Vector.sub(visible.position, this.position).mult(attraction).mult(10000 / dist);
+        if (nutrient) {
+            const dist = nutrient.position.dist(this.position);
+            const attraction = nutrient.isHarmful() ? this.dna.poisonAttraction : this.dna.foodAttraction;
+            const position = nutrient.isHarmful()
+                ? nutrient.position.copy().add(engine.random(-100, 100), engine.random(-100, 100))
+                //engine.createVector(nutrient.position.x + engine.random(-100, 100), nutrient.position.y + engine.random(-100, 100))
+                : nutrient.position
+                
+            const desired = p5.Vector.sub(position /*nutrient.position*/, this.position).mult(attraction).mult(10000 / dist);
 
             desired.setMag(MAX_SPEED);
             const steer = p5.Vector.sub(desired, this.velocity);
@@ -60,7 +65,7 @@ export default class Particle {
         this.position.add(this.velocity);
     }
 
-    decreaseHealth() { this.health -= 0.007; }
+    decreaseHealth() { this.health -= 0.006; }
 
     isAlive() { return this.health > 0; }
 

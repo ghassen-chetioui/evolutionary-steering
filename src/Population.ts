@@ -9,9 +9,15 @@ export default class Population {
 
     constructor(readonly size: number) {
         for (let i = 0; i < size; i++) {
-            const x = Math.floor(engine.random(1200))
+            const x = Math.floor(engine.random(1800))
             const y = Math.floor(engine.random(800))
-            const dna = new DNA(Math.floor(engine.random(20, 100)), engine.random(0, 2), engine.random(-1, 0))
+            
+            const dna = new DNA(
+                Math.floor(engine.random(20, 100)),
+                engine.random(0, 2),
+                engine.random(-1, 0)
+            )
+            
             this.particles.push(new Particle(x, y, dna))
         }
     }

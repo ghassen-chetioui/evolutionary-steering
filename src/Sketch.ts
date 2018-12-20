@@ -7,9 +7,8 @@ const p5 = require("p5");
 
 export const engine: p5 = new p5(() => { });
 
-const widht = 1200;
+const widht = 1800;
 const height = 800;
-const r = 6;
 let nutrients: Nutrient[] = [];
 
 const population = new Population(100)
@@ -22,8 +21,12 @@ engine.setup = () => {
 engine.draw = () => {
   engine.background(50);
   engine.noStroke();
+  drawNutrients();
 
+  run()
 
+}
+const run = () => {
   if (population.aliveIndividual().length > 0) {
     population.aliveIndividual().forEach(p => {
       p.seek(nutrients);
@@ -36,7 +39,6 @@ engine.draw = () => {
     initNutrients();
     population.nextGeneration(0.1);
   }
-  drawNutrients();
 }
 
 const initNutrients = () => {
@@ -47,11 +49,10 @@ const initNutrients = () => {
   }
 }
 
-
-
 const drawParticle = (particle: Particle) => {
   const theta = particle.velocity.heading() + engine.PI / 2;
   const color = engine.lerpColor(engine.color(255, 0, 0), engine.color(0, 255, 0), particle.getHealth())
+  const r = 5;
 
   engine.fill(color);
   engine.stroke(color);
