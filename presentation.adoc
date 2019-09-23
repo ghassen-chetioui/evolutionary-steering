@@ -11,7 +11,7 @@
 Une méthode de recherche heuristique qui s'inspire de l'évolution darwinienne
 
 == Génération de la population initiale (1/4)
-Création de N individu représentant une solution potentiel
+Création de N individu représentant une solution potentielle
 
 == Evaluation des individus (2/4)
 Définir une fonction de +fitness+
