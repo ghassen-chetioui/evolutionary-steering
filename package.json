@@ -28,11 +28,11 @@
   },
   "devDependencies": {
     "@types/node": "^9.4.0",
-    "html-webpack-plugin": "^2.30.1",
+    "html-webpack-plugin": "^5.5.0",
     "http-server": "^0.11.1",
     "ts-loader": "^3.4.0",
     "typescript": "^2.7.1",
-    "webpack": "^3.10.0"
+    "webpack": "^5.75.0"
   },
   "dependencies": {
     "asciidoctor-reveal.js": "^1.1.3",
